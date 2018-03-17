@@ -1,4 +1,4 @@
-var pjs = new PointJS(1100, 620, {backgroundColor: '#999999'})
+var pjs = new PointJS(810, 505, {backgroundColor: '#999999'})
 var game = pjs.game;
 var mouse = pjs.mouseControl;
 mouse.initControl();
@@ -9,6 +9,9 @@ var speed = 5;
 var dx = speed;
 var dy = speed;
 var b = "";
+var s = "";
+var score = 0;
+var showCoin = true;
 
 var circle = game.newCircleObject({ 
 	x: 100, 
@@ -52,6 +55,13 @@ var desk = game.newRectObject({
 	h : 15, 
 	fillColor : "blue" 
 });
+var coin = game.newRectObject({ 
+	x : 390, 
+	y : 20, 
+	w : 50, 
+	h : 20, 
+	fillColor : "blue" 
+});
 
 
 
@@ -59,12 +69,16 @@ var desk = game.newRectObject({
 
 
 game.newLoop('myGame', function () {
+
 	if(key.isDown('D') || key.isDown('RIGHT')) {
  		desk.move(point(speed, 0) );
  	}
  	if(key.isDown('A') || key.isDown('LEFT')) {
  		desk.move(point(-speed, 0) );
- 	}	
+ 	}
+ 	if(key.isDown('R')){
+ 		game.start();
+ 	}		
 
 	if (wallD.isStaticIntersect(circle.getStaticBoxD(0, 0, speed))){
 		dx = -dx;
@@ -83,16 +97,18 @@ game.newLoop('myGame', function () {
 		circle.setPosition(point(circle.x, wallS.y - circle.radius * 2));
 		b = "GAME OVER"
 		pjs.brush.drawText({
- 			text : key.getCountKeysDown() > 0 ? b : b="", 
-  			x : 20, y : 20, 
+ 			text : b, 
+  			x : 320, y : 220, 
   			color : "red",
   			size : 30 
-	});
+		});
 		game.stop();
 	}
+
 	if (desk.isStaticIntersect(circle.getStaticBoxS(0, 0, 0, speed))){
 		dy = -dy;
 		circle.setPosition(point(circle.x, desk.y - circle.radius * 2));
+		score++;
 	}
 
 	if (wallA.isStaticIntersect( desk.getStaticBoxA(-speed, 0, speed))){
@@ -104,6 +120,13 @@ game.newLoop('myGame', function () {
 	}
 
 
+	if (showCoin && coin.isStaticIntersect(circle.getStaticBoxW(0, -speed, 0, speed))){
+		showCoin = false;
+		score += 10;
+	}
+
+
+	s = "score:" + score
 
 
 
@@ -114,8 +137,15 @@ game.newLoop('myGame', function () {
 	wallA.draw();
 	wallW.draw();
 	wallS.draw();
-	desk.draw(); 
+	desk.draw();
+	if (showCoin) coin.draw(); 
 
+	pjs.brush.drawText({
+	 	text : s, 
+	  	x : 20, y : 20, 
+	  	color : "black",
+	  	size : 30 
+	});
 
 
 	
