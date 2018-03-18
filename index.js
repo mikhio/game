@@ -1,4 +1,4 @@
-var pjs = new PointJS(810, 505, {backgroundColor: '#999999'})
+var pjs = new PointJS(810, 505, {backgroundColor: 'black'})
 var game = pjs.game;
 var mouse = pjs.mouseControl;
 mouse.initControl();
@@ -8,59 +8,55 @@ key.initKeyControl();
 var speed = 5;
 var dx = speed;
 var dy = speed;
-var b = "";
+var go = false;
+var showEnemy = true;
 var s = "";
-var score = 0;
-var showCoin = true;
+var m = "";
+var miss = 0;
 
-var circle = game.newCircleObject({ 
-	x: 100, 
-	y: 100, 
-	radius: 20, 
-	fillColor: "green",   
-	angle: 0 
+var tank = game.newRectObject(   { 
+	x : 100, 
+	y : 100, 
+	w : 50, 
+	h : 50, 
+	fillColor : "green", 
+});
+
+var pos = tank.getPositionC();
+
+var bullet = game.newCircleObject(   { 
+	x : pos.x, 
+	y : pos.y, 
+	radius : 5, 
+	fillColor : "red", 
+});
+var enemy = game.newRectObject(   { 
+	x : 280, 
+	y : 100, 
+	w : 50, 
+	h : 50, 
+	fillColor : "blue", 
 });
 var wallD = game.newRectObject({ 
 	x : 800, 
 	y : 5, 
 	w : 1, 
 	h : 490, 
-	fillColor : "#FBFE6F" 
+	fillColor : "black" 
 });
 var wallA = game.newRectObject({ 
 	x : 10, 
 	y : 5, 
 	w : 1, 
 	h : 490, 
-	fillColor : "#FBFE6F" 
+	fillColor : "black" 
 });
 var wallW = game.newRectObject({ 
 	x : 10, 
 	y : 5, 
 	w : 790, 
 	h : 1, 
-	fillColor : "#FBFE6F" 
-});
-var wallS = game.newRectObject({ 
-	x : 10, 
-	y : 495, 
-	w : 790, 
-	h : 1, 
-	fillColor : "#FBFE6F" 
-});
-var desk = game.newRectObject({ 
-	x : 395, 
-	y : 470, 
-	w : 150, 
-	h : 15, 
-	fillColor : "blue" 
-});
-var coin = game.newRectObject({ 
-	x : 390, 
-	y : 20, 
-	w : 50, 
-	h : 20, 
-	fillColor : "blue" 
+	fillColor : "black" 
 });
 
 
@@ -69,86 +65,87 @@ var coin = game.newRectObject({
 
 
 game.newLoop('myGame', function () {
-
 	if(key.isDown('D') || key.isDown('RIGHT')) {
- 		desk.move(point(speed, 0) );
+ 		tank.move(point(speed, 0) );
  	}
  	if(key.isDown('A') || key.isDown('LEFT')) {
- 		desk.move(point(-speed, 0) );
+ 		tank.move(point(-speed, 0) );
  	}
- 	if(key.isDown('R')){
- 		game.start();
- 	}		
+ 	if(key.isDown('S') || key.isDown('DOWN')) {
+ 		tank.move(point(0, speed) );
+ 	}
+ 	if(key.isDown('W') || key.isDown('UP')) {
+ 		tank.move(point(0, -speed) );
+ 	}
+ 	if(key.isDown('SPACE')) {
+ 		go = true;
+ 	}
 
-	if (wallD.isStaticIntersect(circle.getStaticBoxD(0, 0, speed))){
+
+
+
+	if (wallA.isStaticIntersect( enemy.getStaticBoxA(-speed, 0, speed))){
 		dx = -dx;
-		circle.setPosition(point(wallD.x - circle.radius * 2, circle.y));
-	}
-	if (wallA.isStaticIntersect(circle.getStaticBoxA(-speed, 0, speed))){
-		dx = -dx;
-		circle.setPosition(point(wallA.x + wallA.w + 1, circle.y));
-	}
-	if (wallW.isStaticIntersect(circle.getStaticBoxW(0, -speed, 0, speed))){
-		dy = -dy;
-		circle.setPosition(point(circle.x, wallW.y + wallW.h + 1));
-	}
-	if (wallS.isStaticIntersect(circle.getStaticBoxS(0, 0, 0, speed))){
-		dy = -dy;
-		circle.setPosition(point(circle.x, wallS.y - circle.radius * 2));
-		b = "GAME OVER"
-		pjs.brush.drawText({
- 			text : b, 
-  			x : 320, y : 220, 
-  			color : "red",
-  			size : 30 
-		});
-		game.stop();
-	}
-
-	if (desk.isStaticIntersect(circle.getStaticBoxS(0, 0, 0, speed))){
-		dy = -dy;
-		circle.setPosition(point(circle.x, desk.y - circle.radius * 2));
-		score++;
-	}
-
-	if (wallA.isStaticIntersect( desk.getStaticBoxA(-speed, 0, speed))){
-		desk.setPosition(point(wallA.x + wallA.w + 1, desk.y))
+		enemy.setPosition(point(wallA.x + wallA.w + 1, enemy.y))
 	
 	}
-	if (wallD.isStaticIntersect( desk.getStaticBoxD(0, 0, speed))){
-		desk.setPosition(point(wallD.x - desk.w, desk.y))
+	if (wallD.isStaticIntersect( enemy.getStaticBoxD(0, 0, speed))){
+		dx = -dx;
+		enemy.setPosition(point(wallD.x - enemy.w, enemy.y))
+	}
+	if (wallW.isStaticIntersect(bullet.getStaticBoxW(0, -speed, 0, speed))){
+		go = false;
+		miss++;
+	}
+
+	if (enemy.isStaticIntersect(bullet.getStaticBoxW(0, -speed, 0, speed))){
+		go = false;
+		showEnemy = false;
+		s = "WIN"
+
+		pjs.brush.drawText({
+	 		text : s, 
+	  		x : 320, y : 220, 
+	  		color : "red",
+	  		size : 30 
+		});
 	}
 
 
-	if (showCoin && coin.isStaticIntersect(circle.getStaticBoxW(0, -speed, 0, speed))){
-		showCoin = false;
-		score += 10;
-	}
+ 
+
+ 	if (!go && showEnemy) {
+ 		pos = tank.getPositionC();
+ 		bullet.setPosition(point(pos.x, pos.y));
+ 	}
 
 
-	s = "score:" + score
 
 
+ 	if (showEnemy) {
+ 		enemy.move(point(dx, 0));
+ 		enemy.draw();
 
-	circle.move(point(dx, dy));
-	circle.draw();
+ 	}
 
-	wallD.draw();		 
+
+ 	if (go) {
+ 		bullet.move(point(0, -speed));
+ 		bullet.draw();
+ 	}
 	wallA.draw();
+	wallD.draw();
 	wallW.draw();
-	wallS.draw();
-	desk.draw();
-	if (showCoin) coin.draw(); 
+	tank.draw();
+	m = "MISS:" + miss
 
 	pjs.brush.drawText({
-	 	text : s, 
+	 	text : m, 
 	  	x : 20, y : 20, 
-	  	color : "black",
-	  	size : 30 
-	});
-
-
-	
+	  	color : "red",
+	  	size : 30
+	 });
+		
 }) 
 game.setLoop('myGame');
 game.start();
