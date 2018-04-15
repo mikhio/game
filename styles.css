@@ -1,0 +1,48 @@
+/*#c1 {
+	width: 400px;
+	height: 200px;
+	border: 3px solid black;
+	margin: 40px;
+	background-image: url(setka.png);
+}*/
+html, body, table {
+	height: 100%;
+}
+body{
+	background-color: red;
+	padding: 0;
+	margin: 0;
+}
+ul{
+	color: yellow;
+}
+h1{
+	color: yellow;
+}
+header{
+	width: 100%;
+	background: #d5e763;
+	height: 70px;
+}
+header h1 {
+	width: 500px;
+	color: red;
+	margin: 0 auto;
+	font-size: 50px;
+}
+#maket {
+    width: 60%; /* Ширина всей таблицы */
+    height: 100%;
+    margin-left: 20%;
+   }
+   TD {
+    vertical-align: top; /* Вертикальное выравнивание в ячейках */
+    padding: 5px; /* Поля вокруг ячеек */
+   }
+   TD#leftcol {
+    width: 100px; /* Ширина левой колонки */
+    background: #003680; /* Цвет фона левой колонки */
+    border-right: 1px dashed #000; /* Параметры линии */
+   }
+
+  
